@@ -32,7 +32,11 @@ public class UserModel implements Serializable {
     @Column(nullable = false, length = 150)
     private String fullName;
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)    private UserType userType;
+    @Enumerated(EnumType.STRING)
+    private UserType userType;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserStatus userStatus;
     @Column(length = 20)
     private String phoneNumber;
     @Column(length = 20)
