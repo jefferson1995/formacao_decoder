@@ -51,7 +51,7 @@ public class UserController {
 
     @PutMapping("/{userId}")
     public ResponseEntity<Object> updateUser(@PathVariable(value = "userId") UUID userId,
-                                             @JsonView(UserDTO.UserView.UserPut.class) UserDTO userDTO){
+                                             @RequestBody @JsonView(UserDTO.UserView.UserPut.class) UserDTO userDTO){
         Optional<UserModel> userModelOptional = userService.findById(userId);
         if(!userModelOptional.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não existe.");
@@ -69,9 +69,9 @@ public class UserController {
         }
     }
 
-    @PutMapping("/{userId}")
+    @PutMapping("/{userId}/password")
     public ResponseEntity<Object> updatePassword(@PathVariable(value = "userId") UUID userId,
-                                             @JsonView(UserDTO.UserView.PasswordPut.class) UserDTO userDTO){
+                                                 @RequestBody @JsonView(UserDTO.UserView.PasswordPut.class) UserDTO userDTO){
         Optional<UserModel> userModelOptional = userService.findById(userId);
         if(!userModelOptional.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não existe.");
@@ -85,6 +85,23 @@ public class UserController {
             userService.save(userModel);
 
             return ResponseEntity.status(HttpStatus.OK).body("Senha atualizada com sucesso! ");
+        }
+    }
+
+    @PutMapping("/{userId}/image")
+    public ResponseEntity<Object> updateImage(@PathVariable(value = "userId") UUID userId,
+                                                 @RequestBody @JsonView(UserDTO.UserView.ImagePut.class) UserDTO userDTO){
+        Optional<UserModel> userModelOptional = userService.findById(userId);
+        if(!userModelOptional.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não existe.");
+        }else {
+
+            var userModel = userModelOptional.get();
+            userModel.setImageUrl(userDTO.getImageUrl());
+            userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+            userService.save(userModel);
+
+            return ResponseEntity.status(HttpStatus.OK).body(userModel);
         }
     }
 
