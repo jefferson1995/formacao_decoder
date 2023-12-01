@@ -69,6 +69,27 @@ public class UserController {
         }
     }
 
+    @PutMapping("/{userId}")
+    public ResponseEntity<Object> updatePassword(@PathVariable(value = "userId") UUID userId,
+                                             @JsonView(UserDTO.UserView.PasswordPut.class) UserDTO userDTO){
+        Optional<UserModel> userModelOptional = userService.findById(userId);
+        if(!userModelOptional.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não existe.");
+        }if(!userModelOptional.get().getPassword().equals(userDTO.getOldPassword())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: Senha diferente da anterior. ");
+        } else {
+
+            var userModel = userModelOptional.get();
+            userModel.setPassword(userDTO.getPassword());
+            userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+            userService.save(userModel);
+
+            return ResponseEntity.status(HttpStatus.OK).body("Senha atualizada com sucesso! ");
+        }
+    }
+
+
+
 
 
 }
