@@ -1,6 +1,7 @@
 package com.ead.authuser.dtos;
 
 import com.ead.authuser.enums.UserType;
+import com.ead.authuser.validation.UsernameConstraint;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
