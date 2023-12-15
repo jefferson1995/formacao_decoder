@@ -30,7 +30,6 @@ public class CourseController {
         BeanUtils.copyProperties(courseDTO, courseModel);
         courseModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
         courseModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
-        courseService.save(courseModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(courseService.save(courseModel));
     }
 
