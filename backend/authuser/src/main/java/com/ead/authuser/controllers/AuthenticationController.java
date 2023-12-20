@@ -6,6 +6,8 @@ import com.ead.authuser.enums.UserType;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.services.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,8 @@ import java.time.ZoneId;
 @RequestMapping("/auth")
 public class AuthenticationController {
 
+    Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
+
     @Autowired
     UserService userService;
 
@@ -32,7 +36,9 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Este nome de usuário já está em uso. ");
         }
         if(userService.existByUserEmail(userDTO.getEmail())){
+            index();
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Este e-mail já está em uso. ");
+
         }
         var userModel = new UserModel();
         BeanUtils.copyProperties(userDTO, userModel);
@@ -47,7 +53,14 @@ public class AuthenticationController {
     }
 
 
-
+public void index(){
+        logger.trace("TRACE");
+        logger.debug("DEBUG");
+        logger.info("INFOR");
+        logger.warn("WARN");
+        logger.error("ERROR");
+        System.out.println("logs");
+}
 
 
 }
