@@ -6,8 +6,9 @@ import com.ead.authuser.enums.UserType;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.services.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,25 +19,25 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+@Log4j2
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping("/auth")
 public class AuthenticationController {
-
-    Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
-
+    
     @Autowired
     UserService userService;
 
     @PostMapping("/signup")
     public ResponseEntity<Object> registerUser(@RequestBody @Validated(UserDTO.UserView.RegistrationPost.class)
-                                                   @JsonView(UserDTO.UserView.RegistrationPost.class) UserDTO userDTO){
-
-        if(userService.existByUserName(userDTO.getUsername())){
+                                               @JsonView(UserDTO.UserView.RegistrationPost.class) UserDTO userDTO) {
+        log.debug("POST registerUser UserDTO received {}", userDTO.toString());
+        if (userService.existByUserName(userDTO.getUsername())) {
+            log.warn("Username {} user já existente!", userDTO.getUsername());
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Este nome de usuário já está em uso. ");
         }
-        if(userService.existByUserEmail(userDTO.getEmail())){
-            index();
+        if (userService.existByUserEmail(userDTO.getEmail())) {
+            log.warn("E-mail {} e-mail já existente!", userDTO.getEmail());
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Este e-mail já está em uso. ");
 
         }
@@ -47,20 +48,12 @@ public class AuthenticationController {
         userModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
         userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
         userService.save(userModel);
-
+        log.debug("POST registerUser UserModel saved {}", userModel.toString());
+        log.info("Novo usuário salvo com sucesso: Id: {}, Username: {}", userModel.getUserId(), userModel.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED).body(userModel);
 
     }
 
-
-public void index(){
-        logger.trace("TRACE");
-        logger.debug("DEBUG");
-        logger.info("INFOR");
-        logger.warn("WARN");
-        logger.error("ERROR");
-        System.out.println("logs");
-}
 
 
 }
