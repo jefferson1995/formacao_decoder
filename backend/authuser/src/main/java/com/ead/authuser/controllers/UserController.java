@@ -75,7 +75,7 @@ public class UserController {
     public ResponseEntity<Object> updateUser(@PathVariable(value = "userId") UUID userId,
                                              @RequestBody @Validated(UserDTO.UserView.UserPut.class)
                                              @JsonView(UserDTO.UserView.UserPut.class) UserDTO userDTO){
-        log.debug("PUT updateUser UserDTO received {}", userDTO.toString());
+        log.debug("PUT updateUser UserId received {}", userDTO.getUserId());
         Optional<UserModel> userModelOptional = userService.findById(userId);
         if(!userModelOptional.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não existe.");
@@ -89,7 +89,7 @@ public class UserController {
             userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
             userService.save(userModel);
 
-            log.debug("PUT updateUser UserDTO saved {}", userModel.toString());
+            log.debug("PUT updateUser UserId saved {}", userModel.getUserId());
             log.info("usuário atualizado com sucesso: Id: {}", userModel.getUserId());
 
             return ResponseEntity.status(HttpStatus.OK).body(userModel);

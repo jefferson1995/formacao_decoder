@@ -31,7 +31,7 @@ public class AuthenticationController {
     @PostMapping("/signup")
     public ResponseEntity<Object> registerUser(@RequestBody @Validated(UserDTO.UserView.RegistrationPost.class)
                                                @JsonView(UserDTO.UserView.RegistrationPost.class) UserDTO userDTO) {
-        log.debug("POST registerUser UserDTO received {}", userDTO.toString());
+        log.debug("POST registerUser UserId received {}", userDTO.getUserId());
         if (userService.existByUserName(userDTO.getUsername())) {
             log.warn("Username {} user já existente!", userDTO.getUsername());
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Este nome de usuário já está em uso. ");
@@ -48,8 +48,8 @@ public class AuthenticationController {
         userModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
         userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
         userService.save(userModel);
-        log.debug("POST registerUser UserModel saved {}", userModel.toString());
-        log.info("Novo usuário salvo com sucesso: Id: {}, Username: {}", userModel.getUserId(), userModel.getUsername());
+        log.debug("POST registerUser UserId saved {}", userModel.getUserId());
+        log.info("Novo usuário salvo com sucesso: Id: {}", userModel.getUserId());
         return ResponseEntity.status(HttpStatus.CREATED).body(userModel);
 
     }
