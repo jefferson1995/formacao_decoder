@@ -25,6 +25,7 @@ import java.util.UUID;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @Log4j2
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -36,11 +37,17 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<Page<UserModel>> getAllUsers(SpecificationTemplate.UserSpec spec,
-                                                        @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC)
-                                                       Pageable pageable) {
-        Page<UserModel> userModelPage = userService.findAll(spec, pageable);
-        if(!userModelPage.isEmpty()){
-            for (UserModel user : userModelPage.toList()){
+                                                       @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC)
+                                                       Pageable pageable,
+                                                       @RequestParam(required = false) UUID courseId) {
+        Page<UserModel> userModelPage = null;
+        if (courseId != null) {
+            userModelPage = userService.findAll(SpecificationTemplate.userCourseId(courseId).and(spec), pageable);
+        } else {
+            userModelPage = userService.findAll(spec, pageable);
+        }
+        if (!userModelPage.isEmpty()) {
+            for (UserModel user : userModelPage.toList()) {
                 user.add(linkTo(methodOn(UserController.class).getOneUser(user.getUserId())).withSelfRel());
             }
         }
@@ -58,12 +65,12 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Object> deleteUser(@PathVariable(value = "userId") UUID userId){
+    public ResponseEntity<Object> deleteUser(@PathVariable(value = "userId") UUID userId) {
         Optional<UserModel> userModelOptional = userService.findById(userId);
         log.debug("DELETE deleteUser userId ", userId);
-        if(!userModelOptional.isPresent()){
+        if (!userModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não existe.");
-        }else {
+        } else {
             log.debug("DELETE deleteUser userId ", userId);
             log.info("User deletado com sucesso ", userId);
             userService.delete(userModelOptional.get());
@@ -74,12 +81,12 @@ public class UserController {
     @PutMapping("/{userId}")
     public ResponseEntity<Object> updateUser(@PathVariable(value = "userId") UUID userId,
                                              @RequestBody @Validated(UserDTO.UserView.UserPut.class)
-                                             @JsonView(UserDTO.UserView.UserPut.class) UserDTO userDTO){
+                                             @JsonView(UserDTO.UserView.UserPut.class) UserDTO userDTO) {
         log.debug("PUT updateUser UserId received {}", userDTO.getUserId());
         Optional<UserModel> userModelOptional = userService.findById(userId);
-        if(!userModelOptional.isPresent()){
+        if (!userModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não existe.");
-        }else {
+        } else {
 
             var userModel = userModelOptional.get();
 
@@ -99,11 +106,12 @@ public class UserController {
     @PutMapping("/{userId}/password")
     public ResponseEntity<Object> updatePassword(@PathVariable(value = "userId") UUID userId,
                                                  @RequestBody @Validated(UserDTO.UserView.PasswordPut.class)
-                                                 @JsonView(UserDTO.UserView.PasswordPut.class) UserDTO userDTO){
+                                                 @JsonView(UserDTO.UserView.PasswordPut.class) UserDTO userDTO) {
         Optional<UserModel> userModelOptional = userService.findById(userId);
-        if(!userModelOptional.isPresent()){
+        if (!userModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não existe.");
-        }if(!userModelOptional.get().getPassword().equals(userDTO.getOldPassword())){
+        }
+        if (!userModelOptional.get().getPassword().equals(userDTO.getOldPassword())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: Senha diferente da anterior. ");
         } else {
 
@@ -118,12 +126,12 @@ public class UserController {
 
     @PutMapping("/{userId}/image")
     public ResponseEntity<Object> updateImage(@PathVariable(value = "userId") UUID userId,
-                                                 @RequestBody @Validated(UserDTO.UserView.ImagePut.class)
-                                                 @JsonView(UserDTO.UserView.ImagePut.class) UserDTO userDTO){
+                                              @RequestBody @Validated(UserDTO.UserView.ImagePut.class)
+                                              @JsonView(UserDTO.UserView.ImagePut.class) UserDTO userDTO) {
         Optional<UserModel> userModelOptional = userService.findById(userId);
-        if(!userModelOptional.isPresent()){
+        if (!userModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não existe.");
-        }else {
+        } else {
 
             var userModel = userModelOptional.get();
             userModel.setImageUrl(userDTO.getImageUrl());
@@ -133,9 +141,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.OK).body(userModel);
         }
     }
-
-
-
 
 
 }
