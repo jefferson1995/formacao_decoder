@@ -31,20 +31,21 @@ public class CourseClient {
 
     public Page<UserDTO> getAllUsersByCourse(UUID courseId, Pageable pageable) {
         List<UserDTO> searchResult = null;
+        ResponseEntity<ResponsePageDTO<UserDTO>> result = null;
         String url = utilsService.createUrl(courseId, pageable);
         log.debug("Request URL: {}", url);
         log.info("Request URL: {} ", url);
         try {
             ParameterizedTypeReference<ResponsePageDTO<UserDTO>> responseType = new ParameterizedTypeReference<ResponsePageDTO<UserDTO>>() {
             };
-            ResponseEntity<ResponsePageDTO<UserDTO>> result = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
+            result = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
             searchResult = result.getBody().getContent();
             log.debug("Número de elementos retornados: {} ", searchResult.size());
         } catch (HttpStatusCodeException e) {
             log.error("Error Request /users  ", e);
         }
         log.info("Request finalizada /users courseId {} ", courseId);
-        return new PageImpl<>(searchResult);
+        return result.getBody();
     }
 
 

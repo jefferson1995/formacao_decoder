@@ -32,20 +32,21 @@ public class UserClient {
 
     public Page<CourseDTO> getAllCoursesByUser(UUID userId, Pageable pageable) {
         List<CourseDTO> searchResult = null;
+        ResponseEntity<ResponsePageDTO<CourseDTO>> result = null;
         String url = utilsService.createUrl(userId, pageable);
         log.debug("Request URL: {}", url);
         log.info("Request URL: {} ", url);
         try {
             ParameterizedTypeReference<ResponsePageDTO<CourseDTO>> responseType = new ParameterizedTypeReference<ResponsePageDTO<CourseDTO>>() {
             };
-            ResponseEntity<ResponsePageDTO<CourseDTO>> result = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
+            result = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
             searchResult = result.getBody().getContent();
             log.debug("Número de elementos retornados: {} ", searchResult.size());
         } catch (HttpStatusCodeException e) {
             log.error("Error Request /courses  ", e);
         }
         log.info("Request finalizada /courses userId {} ", userId);
-        return new PageImpl<>(searchResult);
+        return result.getBody();
     }
 
 }
