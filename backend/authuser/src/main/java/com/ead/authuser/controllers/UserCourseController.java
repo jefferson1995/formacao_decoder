@@ -1,6 +1,6 @@
 package com.ead.authuser.controllers;
 
-import com.ead.authuser.clients.UserClient;
+import com.ead.authuser.clients.CourseClient;
 import com.ead.authuser.dtos.CourseDTO;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +23,12 @@ import java.util.UUID;
 public class UserCourseController {
 
     @Autowired
-    UserClient userClient;
+    CourseClient courseClient;
 
     @GetMapping("users/{userId}/courses")
     public ResponseEntity<Page<CourseDTO>> getAllCoursesByUser(@PageableDefault(page = 0, size = 10, sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable,
                                                                @PathVariable(value = "userId") UUID userId) {
-        return ResponseEntity.status(HttpStatus.OK).body(userClient.getAllCoursesByUser(userId, pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(courseClient.getAllCoursesByUser(userId, pageable));
 
     }
 
