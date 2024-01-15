@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.UUID;
+
 @Log4j2
 @Component
 public class AuthUserClient {
@@ -47,6 +48,11 @@ public class AuthUserClient {
         }
         log.info("Request finalizada /users courseId {} ", courseId);
         return result.getBody();
+    }
+
+    public ResponseEntity<UserDTO> getOneUserById(UUID userId) {
+        String url = REQUEST_URI_AUTHUSER + "/users/" + userId;
+        return restTemplate.exchange(url, HttpMethod.GET, null, UserDTO.class);
     }
 
 

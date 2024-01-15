@@ -3,6 +3,7 @@ package com.ead.course.controllers;
 import com.ead.course.clients.AuthUserClient;
 import com.ead.course.dtos.SubscriptionDTO;
 import com.ead.course.dtos.UserDTO;
+import com.ead.course.enums.UserStatus;
 import com.ead.course.models.CourseModel;
 import com.ead.course.models.CourseUserModel;
 import com.ead.course.services.CourseService;
@@ -16,6 +17,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpStatusCodeException;
 
 import javax.validation.Valid;
 import java.util.Optional;
@@ -44,6 +46,8 @@ public class CourseUserController {
     @PostMapping("/courses/{courseId}/users/subscription")
     public ResponseEntity<Object> saveSubscriptionUserInCourse(@PathVariable(value = "courseId") UUID courseId,
                                                                @RequestBody @Valid SubscriptionDTO subscriptionDTO) {
+        ResponseEntity<UserDTO> responseUser;
+
         Optional<CourseModel> courseModelOptional = courseService.findById(courseId);
         if (!courseModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Curso não existente. ");
@@ -51,10 +55,21 @@ public class CourseUserController {
         if (courseUserService.existsByCourseAndUserId(courseModelOptional.get(), subscriptionDTO.getUserId())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Usuário já inscrito no curso.");
         }
-        //Verificação de user adicionar
+        try {
+            responseUser = authUserClient.getOneUserById(subscriptionDTO.getUserId());
+            if(responseUser.getBody().getUserStatus().equals(UserStatus.BLOCKED)){
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Usuário está bloqueado!");
+            }
+        }
+        catch (HttpStatusCodeException e){
+            if(e.getStatusCode().equals(HttpStatus.NOT_FOUND)){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não cadastrado!");
+            }
+        }
+
         CourseUserModel courseUserModel = courseUserService.save(courseModelOptional.get().convertToCourseUserModel(subscriptionDTO.getUserId()));
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Inscrição realizada com sucesso!");
+        return ResponseEntity.status(HttpStatus.CREATED).body(courseUserModel);
 
     }
 }
