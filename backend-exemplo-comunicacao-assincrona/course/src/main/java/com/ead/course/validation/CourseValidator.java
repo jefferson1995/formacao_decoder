@@ -1,17 +1,11 @@
 package com.ead.course.validation;
 
-import com.ead.course.clients.AuthUserClient;
 import com.ead.course.dtos.CourseDTO;
-import com.ead.course.dtos.UserDTO;
-import com.ead.course.enums.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import org.springframework.web.client.HttpStatusCodeException;
 
 import java.util.UUID;
 
@@ -23,8 +17,6 @@ public class CourseValidator implements Validator {
     @Qualifier("defaultValidator")
     private Validator validator;
 
-    @Autowired
-    AuthUserClient authUserClient;
 
     @Override
     public boolean supports(Class<?> aClass) {
@@ -35,13 +27,14 @@ public class CourseValidator implements Validator {
     public void validate(Object o, Errors errors) {
         CourseDTO courseDTO = (CourseDTO) o;
         validator.validate(courseDTO, errors);
-        if(!errors.hasErrors()){
+        if (!errors.hasErrors()) {
             validateUserInstructor(courseDTO.getUserInstructor(), errors);
         }
     }
 
-    private void validateUserInstructor(UUID userInstructor, Errors errors){
-        ResponseEntity<UserDTO> responseUserInstructor;
+    private void validateUserInstructor(UUID userInstructor, Errors errors) {
+        //ResponseEntity<UserDTO> responseUserInstructor;
+        /*
        try {
            responseUserInstructor = authUserClient.getOneUserById(userInstructor);
            if (responseUserInstructor.getBody().getUserType().equals(UserType.STUDENT)){
@@ -52,6 +45,8 @@ public class CourseValidator implements Validator {
                 errors.rejectValue("userInstructor", "UserInstructorError", "Instrutor/Admin não encontrado.");
             }
        }
-
+*/
     }
+
+
 }
