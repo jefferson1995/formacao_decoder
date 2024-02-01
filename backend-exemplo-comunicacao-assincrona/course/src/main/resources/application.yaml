@@ -18,6 +18,11 @@ spring:
     properties:
       hibernate:
         show_sql: true
+  output:
+    ansi:
+      enabled: always
+  rabbitmq:
+    addresses: amqps://ruefzhwe:E7VAZe3q29on7h26eTbNdYZHeT4aqLfw@chimpanzee.rmq.cloudamqp.com/ruefzhwe
 ead:
   api:
     url:

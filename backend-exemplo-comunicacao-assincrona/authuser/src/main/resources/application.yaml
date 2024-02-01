@@ -21,6 +21,8 @@ spring:
   output:
     ansi:
       enabled: always
+  rabbitmq:
+    addresses: amqps://ruefzhwe:E7VAZe3q29on7h26eTbNdYZHeT4aqLfw@chimpanzee.rmq.cloudamqp.com/ruefzhwe
 logging:
   level:
     com.ead: TRACE
@@ -31,7 +33,9 @@ ead:
   api:
     url:
       course: 'http://ead-course-service/ead-course'
-
+  broker:
+    exchange:
+      userEvent: ead.userevent
 eureka:
   client:
     serviceUrl:

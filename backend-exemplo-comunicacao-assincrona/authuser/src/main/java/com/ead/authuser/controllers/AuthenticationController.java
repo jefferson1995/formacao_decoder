@@ -24,7 +24,7 @@ import java.time.ZoneId;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping("/auth")
 public class AuthenticationController {
-    
+
     @Autowired
     UserService userService;
 
@@ -47,13 +47,11 @@ public class AuthenticationController {
         userModel.setUserType(UserType.STUDENT);
         userModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
         userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
-        userService.save(userModel);
+        userService.saveUser(userModel);
         log.debug("POST registerUser UserId saved {}", userModel.getUserId());
         log.info("Novo usuário salvo com sucesso: Id: {}", userModel.getUserId());
         return ResponseEntity.status(HttpStatus.CREATED).body(userModel);
 
     }
-
-
 
 }
