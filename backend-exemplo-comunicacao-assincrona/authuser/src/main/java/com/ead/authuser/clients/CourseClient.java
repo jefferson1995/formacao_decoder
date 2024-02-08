@@ -3,7 +3,7 @@ package com.ead.authuser.clients;
 import com.ead.authuser.dtos.CourseDTO;
 import com.ead.authuser.dtos.ResponsePageDTO;
 import com.ead.authuser.services.UtilsService;
-import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,7 +34,8 @@ public class CourseClient {
     @Value("${ead.api.url.course}")
     String REQUEST_URI_COURSE;
 
-    @Retry(name = "retryInstance", fallbackMethod = "retryfallback")
+    //@Retry(name = "retryInstance", fallbackMethod = "retryfallback")
+    @CircuitBreaker(name = "circuitbreakerInstance"/*,fallbackMethod = "circuitbreakerfallback"*/)  //caso seja necessário retorna alfuma função, remover comentário
     public Page<CourseDTO> getAllCoursesByUser(UUID userId, Pageable pageable) {
         List<CourseDTO> searchResult = null;
         ResponseEntity<ResponsePageDTO<CourseDTO>> result = null;
@@ -52,6 +53,12 @@ public class CourseClient {
         }
         log.info("Request finalizada /courses userId {} ", userId);
         return result.getBody();
+    }
+
+    public Page<CourseDTO> circuitbreakerfallback(UUID userId, Pageable pageable, Throwable t) {
+        log.error("Acionado o  circuit breaker fallback, causa: {}", t.toString());
+        List<CourseDTO> searchResult = new ArrayList<>();
+        return new PageImpl<>(searchResult);
     }
 
     public Page<CourseDTO> retryfallback(UUID userId, Pageable pageable, Throwable t) {
