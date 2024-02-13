@@ -11,7 +11,7 @@ spring:
           uri: https://github.com/jefferson1995/ead-config-server-repo
           default-label: main
           username: jefferson1995
-          password: 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
+          password: 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
 
 eureka:
   client:
