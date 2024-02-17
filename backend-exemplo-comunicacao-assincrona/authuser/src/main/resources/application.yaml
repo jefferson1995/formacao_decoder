@@ -1,67 +1,69 @@
-#server:
-#  port: 8087
-#  servlet:
-#    context-path: '/ead-authuser/'
+server:
+  port: 8087
+  servlet:
+    context-path: '/ead-authuser/'
 spring:
   application:
     name: ead-authuser-service
   config:
-    import: 'configserver:'
+    import: 'optional:configserver:'
   cloud:
     config:
       discovery:
         service-id: ead-config-server
-      #  datasource:
-    #    url:  jdbc:postgresql://localhost:5432/ead-authuser-v2
-    #username: postgres
-    #password: 123456
-    #jpa:
-      #hibernate:
-      #ddl-auto: update
-      #dialect: org.hibernate.dialect.PostgreSQLDialect
-      #jdbc:
-    #lob.non-contextual-creation: true
-      #properties:
-      #hibernate:
-    #show_sql: true
-    #output:
-      #ansi:
-    #enabled: always
-    #rabbitmq:
-    #addresses: amqps://ruefzhwe:E7VAZe3q29on7h26eTbNdYZHeT4aqLfw@chimpanzee.rmq.cloudamqp.com/ruefzhwe
-  #logging:
-    #level:
-    #com.ead: TRACE
-    #root: INFO
-    #org.springframework.web: DEBUG
-    #org.hibernate: INFO
-  #ead:
-    #api:
-      #url:
-    #course: 'http://ead-course-service/ead-course'
-    #broker:
-      #exchange:
-    #userEvent: ead.userevent
-  #eureka:
-    #client:
-      #serviceUrl:
-    #defaultZone: 'http://localhost:8761/eureka'
-    #instance:
-    #hostname: localhost
+  datasource:
+    url:  jdbc:postgresql://localhost:5432/ead-authuser-v2
+    username: postgres
+    password: 123456
+  jpa:
+    hibernate:
+      ddl-auto: update
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+      jdbc:
+        lob.non-contextual-creation: true
+    properties:
+      hibernate:
+        show_sql: true
+  output:
+      ansi:
+        enabled: always
+  rabbitmq:
+    addresses: amqps://ruefzhwe:E7VAZe3q29on7h26eTbNdYZHeT4aqLfw@chimpanzee.rmq.cloudamqp.com/ruefzhwe
+  logging:
+    level:
+      com.ead: TRACE
+      root: INFO
+      org.springframework.web: DEBUG
+      org.hibernate: INFO
+ead:
+    api:
+      url:
+        course: 'http://ead-course-service/ead-course'
+    broker:
+      exchange:
+        userEvent: ead.userevent
+authuser:
+  refreshscope:
+    name: jefferson barbosa update
+eureka:
+    client:
+      serviceUrl:
+        defaultZone: 'http://localhost:8761/eureka'
+    instance:
+        hostname: localhost
 
-  #resilience4j:
-    #circuitbreaker:
-      #instances:
-      #circuitbreakerInstance:
-      #slidingWindowSize: 30
-      #permittedNumberOfCallsInHalfOpenState: 2
-      #slidingWindowType: TIME_BASED
-      #minimumNumberOfCalls: 2
-      #waitDurationInOpenState: 30s
-    #failureRateThreshold: 80
-
-    #retry:
-      #instances:
-      #retryInstance:
-      #maxAttempts: 3
-    #waitDuration: 5s
+resilience4j:
+    circuitbreaker:
+      instances:
+        circuitbreakerInstance:
+          slidingWindowSize: 30
+          permittedNumberOfCallsInHalfOpenState: 2
+          slidingWindowType: TIME_BASED
+          minimumNumberOfCalls: 2
+          waitDurationInOpenState: 30s
+          failureRateThreshold: 80
+retry:
+    instances:
+      retryInstance:
+        maxAttempts: 3
+        waitDuration: 5s
