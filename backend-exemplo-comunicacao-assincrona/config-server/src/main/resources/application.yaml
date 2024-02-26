@@ -11,8 +11,11 @@ spring:
           uri: https://github.com/jefferson1995/ead-config-server-repo
           default-label: main
           username: jefferson1995
-          password: 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
+          password: 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
 ead:
+  configServer:
+    username: configserver
+    password: 'ead123cs'
   serviceRegistry:
     username: serviceregistry
     password: 'ead123sr'
