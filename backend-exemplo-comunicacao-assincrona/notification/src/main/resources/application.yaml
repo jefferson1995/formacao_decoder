@@ -7,12 +7,12 @@ spring:
     name: ead-notification-service
   config:
     import: 'optional:configserver:'
-    cloud:
-      config:
-        discovery:
-          serviceId: ead-config-server
-        username: configserver
-        password: 'ead123cs'
+  cloud:
+    config:
+      discovery:
+        service-id: ead-config-server
+      username: configserver
+      password: 'ead123cs'
   datasource:
     url: jdbc:postgresql://localhost:5432/ead-notification-v2
     username: postgres
