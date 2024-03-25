@@ -1,0 +1,27 @@
+server:
+  port: 8888
+
+spring:
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/jefferson1995/ead-config-server-repo
+          default-label: main
+          username: jefferson1995
+          password: 1
+ead:
+  configServer:
+    username: configserver
+    password: 'ead123cs'
+  serviceRegistry:
+    username: serviceregistry
+    password: 'ead123sr'
+
+eureka:
+  client:
+    service-url:
+      defaultZone: 'http://${ead.serviceRegistry.username}:${ead.serviceRegistry.password}@localhost:8761/eureka'
+  instance:
+    hostname: localhost
+
