@@ -1,0 +1,13 @@
+server:
+  port: 8087
+  servlet:
+    context-path: '/ead-authuser/'
+spring:
+  config:
+    import: 'optional:configserver:'
+  cloud:
+    config:
+      discovery:
+        service-id: ead-config-server
+      username: configserver
+      password: 'ead123cs'
