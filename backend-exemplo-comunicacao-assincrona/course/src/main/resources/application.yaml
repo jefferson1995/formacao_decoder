@@ -1,15 +1,5 @@
-server:
-  port: 8082
-  servlet:
-    context-path: '/ead-course/'
 spring:
+  profiles:
+    active: dev
   application:
     name: ead-course-service
-  config:
-    import: 'optional:configserver:'
-  cloud:
-    config:
-      discovery:
-        service-id: ead-config-server
-      username: configserver
-      password: 'ead123cs'
