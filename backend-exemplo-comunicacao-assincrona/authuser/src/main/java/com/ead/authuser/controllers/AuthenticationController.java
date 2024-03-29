@@ -89,5 +89,33 @@ public class AuthenticationController {
         return ResponseEntity.ok(new JwtDTO(jwt));
     }
 
+    @PostMapping("/signup/admin/usr")
+    public ResponseEntity<Object> registerUserAdmin(@RequestBody @Validated(UserDTO.UserView.RegistrationPost.class)
+                                                    @JsonView(UserDTO.UserView.RegistrationPost.class) UserDTO userDTO) {
+        log.debug("POST registerUser UserId received {}", userDTO.getUserId());
+        if (userService.existByUserName(userDTO.getUsername())) {
+            log.warn("Username {} user já existente!", userDTO.getUsername());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Este nome de usuário já está em uso. ");
+        }
+        if (userService.existByUserEmail(userDTO.getEmail())) {
+            log.warn("E-mail {} e-mail já existente!", userDTO.getEmail());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Este e-mail já está em uso. ");
+        }
+        RoleModel roleModel = roleService.findByRoleName(RoleType.ROLE_ADMIN)
+                .orElseThrow(() -> new RuntimeException("Error: Essa role não foi encontrada."));
+        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        var userModel = new UserModel();
+        BeanUtils.copyProperties(userDTO, userModel);
+        userModel.setUserStatus(UserStatus.ACTIVE);
+        userModel.setUserType(UserType.ADMIN);
+        userModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
+        userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+        userModel.getRoles().add(roleModel);
+        userService.saveUser(userModel);
+        log.debug("POST registerUser UserId saved {}", userModel.getUserId());
+        log.info("Novo usuário salvo com sucesso: Id: {}", userModel.getUserId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(userModel);
+
+    }
 
 }
