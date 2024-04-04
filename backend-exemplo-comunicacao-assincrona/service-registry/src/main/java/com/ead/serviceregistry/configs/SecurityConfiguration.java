@@ -30,7 +30,6 @@ public class SecurityConfiguration {
                         .anyRequest().authenticated()
                 )
                 .httpBasic(withDefaults())
-                .csrf().disable()
                 .formLogin(withDefaults());
         return http.build();
     }
