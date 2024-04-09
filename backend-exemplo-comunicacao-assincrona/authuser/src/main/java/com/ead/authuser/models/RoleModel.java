@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.UUID;
 

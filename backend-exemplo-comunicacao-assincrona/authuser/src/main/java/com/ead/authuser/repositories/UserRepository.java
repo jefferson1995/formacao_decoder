@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 import java.util.Optional;
 import java.util.UUID;
 
