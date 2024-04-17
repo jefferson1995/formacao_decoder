@@ -63,7 +63,7 @@ public class AuthenticationController {
             log.warn("E-mail {} e-mail já existente!", userDTO.getEmail());
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Este e-mail já está em uso. ");
         }
-        RoleModel roleModel = roleService.findByRoleName(RoleType.ROLE_STUDENT)
+        RoleModel roleModel = roleService.findByRoleName(RoleType.ROLE_USER)
                 .orElseThrow(() -> new RuntimeException("Error: Essa role não foi encontrada."));
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         var userModel = new UserModel();
