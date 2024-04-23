@@ -1,6 +1,7 @@
 package com.ead.notification.controllers;
 
 import com.ead.notification.dtos.NotificationDTO;
+import com.ead.notification.dtos.NotificationRecordDTO;
 import com.ead.notification.models.NotificationModel;
 import com.ead.notification.services.NotificationService;
 import org.springframework.data.domain.Page;
@@ -40,13 +41,13 @@ public class NotificationUserController {
     @PutMapping("/users/{userId}/notifications/{notificationId}")
     public ResponseEntity<Object> updateNotification(@PathVariable(value = "userId") UUID userId,
                                                      @PathVariable(value = "notificationId") UUID notificationId,
-                                                     @RequestBody @Valid NotificationDTO notificationDTO) {
+                                                     @RequestBody @Valid NotificationRecordDTO notificationRecordDTO) {
         Optional<NotificationModel> notificationModelOptional = notificationService.findByNotificationIdAndUserId(notificationId, userId);
         if (notificationModelOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Notificação não encontrada");
         }
 
-        notificationModelOptional.get().setNotificationStatus(notificationDTO.getNotificationStatus());
+        notificationModelOptional.get().setNotificationStatus(notificationRecordDTO.notificationStatus());
         notificationService.saveNotification(notificationModelOptional.get());
 
         return ResponseEntity.status(HttpStatus.OK).body(notificationModelOptional.get());
