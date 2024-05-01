@@ -1,6 +1,0 @@
-services:
-  microservice-service-registry:
-    image: service-registry:v1
-    ports:
-      - "8761:8761"
-
