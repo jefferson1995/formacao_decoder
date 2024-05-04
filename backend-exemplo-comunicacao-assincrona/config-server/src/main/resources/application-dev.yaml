@@ -9,7 +9,7 @@ spring:
           uri: https://github.com/jefferson1995/ead-config-server-repo
           default-label: main
           username: jefferson1995
-          password: 11
+          password: ${TOKEN_GITHUB}
 ead:
   configServer:
     username: configserver
