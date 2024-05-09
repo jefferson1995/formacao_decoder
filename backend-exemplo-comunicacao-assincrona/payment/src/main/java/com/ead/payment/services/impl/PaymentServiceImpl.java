@@ -1,14 +1,18 @@
 package com.ead.payment.services.impl;
 
+import com.ead.payment.dtos.PaymentCommandDTO;
 import com.ead.payment.dtos.PaymentRequestDTO;
 import com.ead.payment.enums.PaymentControl;
 import com.ead.payment.models.CreditCardModel;
 import com.ead.payment.models.PaymentModel;
 import com.ead.payment.models.UserModel;
+import com.ead.payment.publishers.PaymentCommandPublisher;
 import com.ead.payment.repositories.CreditCardRepository;
 import com.ead.payment.repositories.PaymentRepository;
 import com.ead.payment.services.PaymentService;
 import jakarta.transaction.Transactional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,11 +28,15 @@ import java.util.UUID;
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
+    private static final Logger logger = LogManager.getLogger(PaymentServiceImpl.class);
+
     @Autowired
     CreditCardRepository creditCardRepository;
     @Autowired
     private PaymentRepository paymentRepository;
 
+    @Autowired
+    PaymentCommandPublisher paymentCommandPublisher;
 
     @Transactional
     @Override
@@ -38,7 +46,7 @@ public class PaymentServiceImpl implements PaymentService {
         var creditCardModel = new CreditCardModel();
         var creditCardModelOptional = creditCardRepository.findByUser(userModel);
 
-        if(creditCardModelOptional.isPresent()){ //Substitui os dados do DTO
+        if (creditCardModelOptional.isPresent()) { //Substitui os dados do DTO
             creditCardModel = creditCardModelOptional.get();
         }
 
@@ -58,8 +66,15 @@ public class PaymentServiceImpl implements PaymentService {
         paymentRepository.save(paymentModel);
 
         //Send Request to queue -> Envia para fila e depois o consumer vai receber a msg e iniciar o processo de pagamento
-
-
+        try {
+            var paymmentCommandDTO = new PaymentCommandDTO();
+            paymmentCommandDTO.setUserId(userModel.getUserId());
+            paymmentCommandDTO.setPaymentId(paymentModel.getPaymentId());
+            paymmentCommandDTO.setCardId(creditCardModel.getCardId());
+            paymentCommandPublisher.publishPaymentCommand(paymmentCommandDTO);
+        } catch (Exception e) {
+            logger.warn("erro ao enviar mensagem payment command!");
+        }
         return paymentModel;
     }
 
