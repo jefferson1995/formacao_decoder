@@ -25,3 +25,5 @@ eureka:
   instance:
     hostname: localhost
 
+encrypt:
+  key: MFswDQYJKoZIhvcNAQEBBQADSgAwRwJAdiTEB+A5Im2cSgBjPAkqUWhNVIKVo+dX2oUEI1fstAjpAN49ufoRBNUmWzeQK7gpzLqhyV6rm4ZNxElXsG4lpwIDAQAB

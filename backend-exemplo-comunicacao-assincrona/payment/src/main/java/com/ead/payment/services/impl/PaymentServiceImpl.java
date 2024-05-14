@@ -9,7 +9,9 @@ import com.ead.payment.models.UserModel;
 import com.ead.payment.publishers.PaymentCommandPublisher;
 import com.ead.payment.repositories.CreditCardRepository;
 import com.ead.payment.repositories.PaymentRepository;
+import com.ead.payment.repositories.UserRepository;
 import com.ead.payment.services.PaymentService;
+import com.ead.payment.services.PaymentStripeService;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,6 +39,13 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Autowired
     PaymentCommandPublisher paymentCommandPublisher;
+
+    @Autowired
+    PaymentStripeService paymentStripeService;
+
+    @Autowired
+    private UserRepository userRepository;
+
 
     @Transactional
     @Override
@@ -91,5 +100,16 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public Optional<PaymentModel> findPaymentByUser(UUID userId, UUID paymentId) {
         return paymentRepository.findPaymentByUser(userId, paymentId);
+    }
+
+    @Transactional
+    @Override
+    public void makePayment(PaymentCommandDTO paymentCommandDTO) {
+        var paymentModel = paymentRepository.findById(paymentCommandDTO.getPaymentId()).get();
+        var userModel = userRepository.findById(paymentCommandDTO.getUserId()).get();
+        var creditCardModel = creditCardRepository.findById(paymentCommandDTO.getCardId()).get();
+
+        paymentModel = paymentStripeService.processStripePayment(paymentModel, creditCardModel);
+
     }
 }
