@@ -6,6 +6,9 @@ import com.ead.payment.services.PaymentStripeService;
 import com.stripe.Stripe;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.PaymentMethod;
+import com.stripe.param.PaymentIntentConfirmParams;
+import com.stripe.param.PaymentIntentCreateParams;
+import com.stripe.param.PaymentMethodCreateParams;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -29,43 +32,36 @@ public class PaymentStripeServiceImpl implements PaymentStripeService {
 
         try {
             //passo 1 - payment intenção de pagamento.
-            Map<String, String> cardOptions = new HashMap<>();
-            List<String> paymentMethodTypes = new ArrayList<>();
-            paymentMethodTypes.add("card");
-            Map<String, Object> paramsPaymentIntent = new HashMap<>();
-            paramsPaymentIntent.put("amount", paymentModel.getValuePaid().multiply(new BigDecimal("100")).longValue());
-            paramsPaymentIntent.put("capture_method", "automatic");
-            paramsPaymentIntent.put("description", "valor de pagamento teste");
-            paramsPaymentIntent.put("currency", "brl");
-            paramsPaymentIntent.put("payment_method", "pm_1PGIq4EyE3SweTIaMbCqXhZ8");
-            paramsPaymentIntent.put("payment_method_types", paymentMethodTypes);
-            paramsPaymentIntent.put("moto", "true");
+            PaymentIntentCreateParams paramsPaymentIntent =
+                    PaymentIntentCreateParams.builder()
+                            .setAmount(paymentModel.getValuePaid().multiply(new BigDecimal("100")).longValue())
+                            .setCurrency("brl")
+                            .setAutomaticPaymentMethods(
+                                    PaymentIntentCreateParams.AutomaticPaymentMethods.builder()
+                                            .setEnabled(true)
+                                            .build()
+                            )
+                            .build();
+            PaymentIntent paymentIntentResource = PaymentIntent.create(paramsPaymentIntent);
+            paymentIntentId = paymentIntentResource.getId();
 
-            PaymentIntent paymentIntent = PaymentIntent.create(paramsPaymentIntent);
-            paymentIntentId = paymentIntent.getId();
 
-            System.out.println(paymentIntentId);
-
-            //passo 2 -> Método de pagamento
-            Map<String, Object> card = new HashMap<>();
-            card.put("number", creditCardModel.getCreditCardNumber().replaceAll(" ", ""));
-            card.put("exp_month", creditCardModel.getExpirationDate().split("/")[0]);
-            card.put("exp_year", creditCardModel.getExpirationDate().split("/")[1]);
-            card.put("cvc", creditCardModel.getCvvCode());
-            Map<String, Object> paramsPaymentMethod = new HashMap<>();
-            paramsPaymentMethod.put("type", "card");
-            paramsPaymentMethod.put("card", card);
-            PaymentMethod paymentMethod = PaymentMethod.create(paramsPaymentMethod);
-
-            //Passo 3 -> criar a confirmação de criação de pagamento
-            Map<String, Object> paramsPaymentConfirm = new HashMap<>();
-            paramsPaymentConfirm.put("payment_method", paymentMethod.getId());
-            PaymentIntent confirmPaymentIntent = paymentIntent.confirm(paramsPaymentConfirm);
-
+            //Passo 2 -> criar a confirmação de criação de pagamento
+            PaymentIntent resource = PaymentIntent.retrieve(paymentIntentId);
+            PaymentIntentConfirmParams params =
+                    PaymentIntentConfirmParams.builder()
+                            .setPaymentMethod("pm_card_visa")
+                            .setReturnUrl("https://www.example.com")
+                            .build();
+            PaymentIntent paymentIntent = resource.confirm(params);
 
         }catch (Exception e){
 
         }
         return null;
+    }
+
+    public long formataNumero(String numero){
+        return (Long.parseLong(numero));
     }
 }
