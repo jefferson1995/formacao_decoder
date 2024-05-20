@@ -53,7 +53,8 @@ public class CourseValidator implements Validator {
             if (!userModelOptional.isPresent()) {
                 errors.rejectValue("userInstructor", "UserInstructorError", "Instrutor/Admin não encontrado.");
             }
-            if (userModelOptional.get().getUserType().equals(UserType.STUDENT.toString())) {
+           else if (userModelOptional.get().getUserType().equals(UserType.STUDENT.toString()) ||
+                    userModelOptional.get().getUserType().equals(UserType.USER.toString())) {
                 errors.rejectValue("userInstructor", "UserInstructorError", "Usuário dever ser Instrutor/Admin.");
             }
 

@@ -25,15 +25,15 @@ public class UserConsumer {
             exchange = @Exchange(value = "${ead.broker.exchange.userEventExchange}", type = ExchangeTypes.FANOUT, ignoreDeclarationExceptions = "true")
     ))
     public void listenUserEvent(@Payload UserEventDTO userEventDTO) {
-        var userModel = userEventDTO.convertToUserModel();
 
         switch (ActionType.valueOf(userEventDTO.getActionType())) {
             case CREATE:
+                var userModel = userEventDTO.convertToUserModel(new UserModel());
                 userModel.setPaymentStatus(PaymentStatus.NOTSTARTED);
                 userService.save(userModel);
                 break;
             case UPDATE:
-                userService.save(userModel);
+                userService.save(userEventDTO.convertToUserModel(userService.findById(userEventDTO.getUserId()).get()));
                 break;
             case DELETE:
                 userService.delete(userEventDTO.getUserId());
