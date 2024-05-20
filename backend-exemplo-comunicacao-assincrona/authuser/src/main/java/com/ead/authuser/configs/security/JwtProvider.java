@@ -29,7 +29,7 @@ public class JwtProvider {
         final String roles = userPrincipal.getAuthorities().stream()
                 .map(role -> {
                     return role.getAuthority();
-                }).collect(Collectors.joining(", "));
+                }).collect(Collectors.joining(","));
         SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
         return Jwts.builder()
                 .setSubject(userPrincipal.getUserId().toString())

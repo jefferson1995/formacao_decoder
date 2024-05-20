@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 
 
@@ -22,9 +21,8 @@ public class JwtProvider {
 
 
     public String getSubjectJwt(String token) {
-        SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
         return Jwts.parserBuilder()
-                .setSigningKey(key).build()
+                .setSigningKey(Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8))).build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
@@ -35,8 +33,7 @@ public class JwtProvider {
                 .setSigningKey(Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8))).build()
                 .parseClaimsJws(token)
                 .getBody()
-                .get(claimName)
-                .toString();
+                .get(claimName).toString();
     }
 
     public boolean validadeJwt(String authToken) {
